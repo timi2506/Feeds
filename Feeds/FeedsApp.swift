@@ -38,14 +38,16 @@ struct jglyptApp: App {
         }
         .windowStyle(.plain)
         .commands(content: {
-            CommandMenu("Debug", content: {
-                Button("Open Notification Begger") {
-                    openWindow.callAsFunction(id: "grantNotificationPermission")
-                }
-                Button("Close all Notification Beggers") {
-                    dismissWindow.callAsFunction(id: "grantNotificationPermission")
-                }
-            })
+            if settingsManager.debug {
+                CommandMenu("Debug", content: {
+                    Button("Open Notification Begger") {
+                        openWindow.callAsFunction(id: "grantNotificationPermission")
+                    }
+                    Button("Close all Notification Beggers") {
+                        dismissWindow.callAsFunction(id: "grantNotificationPermission")
+                    }
+                })
+            }
         })
         WindowGroup(id: "loading", for: String.self) { string in
             VStack {
@@ -316,6 +318,7 @@ struct WelcomeView: View {
     @StateObject var projectManager = ProjectManager.shared
     @StateObject var settingsManager = SettingsManager.shared
     @State var importFeedFile = false
+    @State var debugCount = 0
     var body: some View {
         ZStack {
             HStack(alignment: .top, spacing: 0.0) {
@@ -331,6 +334,16 @@ struct WelcomeView: View {
                                 .frame(width: 140.0, height: 140.0)
                                 .blur(radius: 50)
                         }
+                        .simultaneousGesture (
+                            TapGesture()
+                                .onEnded { _ in
+                                    debugCount += 1
+                                    if debugCount == 10 {
+                                        settingsManager.debug.toggle()
+                                        debugCount = 0
+                                    }
+                                }
+                        )
                     
                     Spacer().frame(height: 3.0)
                     
@@ -680,6 +693,8 @@ class SettingsManager: ObservableObject {
     }
     @AppStorage("defaultImportMethod") var defaultImportMethod = "none"
     @AppStorage("setAppIcon") var setAppIcon = false
+    @AppStorage("debug") var debug = false
+
     @Published var token: String?
 }
 

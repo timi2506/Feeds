@@ -1,0 +1,24 @@
+{
+  "originHash" : "927533d8ae270db25834bf37edd0d6fdad95c4524ed0c5b4cc4ccd3a4420c3ed",
+  "pins" : [
+    {
+      "identity" : "swiftkeychainwrapper",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jrendel/SwiftKeychainWrapper",
+      "state" : {
+        "revision" : "185a3165346a03767101c4f62e9a545a0fe0530f",
+        "version" : "4.0.1"
+      }
+    },
+    {
+      "identity" : "webviewkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/danielsaidi/WebViewKit.git",
+      "state" : {
+        "revision" : "a24f91e6dceb6255f1652482c8f2d0a57e391b55",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

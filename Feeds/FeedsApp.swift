@@ -8,13 +8,11 @@
 import SwiftUI
 import UserNotifications
 
-
 @main
 struct jglyptApp: App {
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.openWindow) private var openWindow
     @StateObject var settingsManager = SettingsManager.shared
-
     var body: some Scene {
         WindowGroup(id: "mainWindow") {
             WelcomeView(titleText: "Welcome to \(Bundle.main.applicationName ?? "Feeds")")
@@ -29,7 +27,23 @@ struct jglyptApp: App {
 //            DecodingView()
 //                .cornerRadius(5)
             .onOpenURL(perform: { url in
-                Task { await importFromURL(url) }
+                if url.isFileURL {
+                    NSDocumentController.shared.noteNewRecentDocumentURL(url)
+                }
+                let alert = NSAlert()
+                alert.messageText = "Open File"
+                alert.informativeText = "What do you want to do with this file?"
+                alert.alertStyle = .informational
+                
+                alert.addButton(withTitle: "Import")
+                alert.addButton(withTitle: "Open")
+                
+                let response = alert.runModal()
+                if response == .alertFirstButtonReturn {
+                    Task { await importFromURL(url) }
+                } else {
+                    openFeed(url: url)
+                }
             })
             .task {
                 try? await Task.sleep(for: .seconds(1))
@@ -587,7 +601,13 @@ import Combine
 class ProjectManager: ObservableObject {
     static let shared = ProjectManager()
     let homeDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("Feeds-Recent-Files", conformingTo: .folder)
-    @Published var recentFiles: [URL] = []
+    @Published var recentFiles: [URL] = [] {
+        didSet {
+            for url in recentFiles {
+                NSDocumentController.shared.noteNewRecentDocumentURL(url)
+            }
+        }
+    }
     
     private var folderDescriptor: CInt = -1
     private var folderWatcherSource: DispatchSourceFileSystemObject?
@@ -666,6 +686,7 @@ class ProjectManager: ObservableObject {
                 }
                 finalFileName = newName
                 newFileURL = homeDir.appendingPathComponent(finalFileName, conformingTo: .json)
+                NSDocumentController.shared.noteNewRecentDocumentURL(newFileURL)
             } else {
                 onError(CancellationError())
                 return

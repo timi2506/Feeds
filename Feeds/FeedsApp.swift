@@ -604,9 +604,11 @@ class ProjectManager: ObservableObject {
     @Published var recentFiles: [URL] = [] {
         didSet {
             NSDocumentController.shared.clearRecentDocuments(nil)
-            for url in recentFiles {
-                NSDocumentController.shared.noteNewRecentDocumentURL(url)
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: {
+                for url in self.recentFiles {
+                    NSDocumentController.shared.noteNewRecentDocumentURL(url)
+                }
+            })
         }
     }
     

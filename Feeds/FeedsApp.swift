@@ -1,5 +1,5 @@
 //
-//  jglyptApp.swift
+//  FeedsApp.swift
 //  Feeds
 //
 //  Created by Tim on 29.05.25.
@@ -9,7 +9,7 @@ import SwiftUI
 import UserNotifications
 
 @main
-struct jglyptApp: App {
+struct FeedsApp: App {
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.openWindow) private var openWindow
     @StateObject var settingsManager = SettingsManager.shared

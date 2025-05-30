@@ -603,6 +603,7 @@ class ProjectManager: ObservableObject {
     let homeDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("Feeds-Recent-Files", conformingTo: .folder)
     @Published var recentFiles: [URL] = [] {
         didSet {
+            NSDocumentController.shared.clearRecentDocuments(nil)
             for url in recentFiles {
                 NSDocumentController.shared.noteNewRecentDocumentURL(url)
             }
